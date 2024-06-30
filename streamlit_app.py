@@ -17,7 +17,6 @@ query_sql = '''
                 *
             FROM
                 student.ojdb_matches
-            OFFSET
             LIMIT 1;
 '''
 
