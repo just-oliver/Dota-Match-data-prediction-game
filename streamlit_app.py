@@ -13,11 +13,10 @@ conn = psql.connect(database = 'pagila',
 cur = conn.cursor()
 
 query_sql = '''
-            SELECT
-                *
-            FROM
-                student.ojdb_matches
-            LIMIT 1;
+            SELECT *
+            FROM student.ojdb_matches
+            ORDER BY RANDOM()
+            LIMIT 1
 '''
 
 cur.execute(query_sql)
