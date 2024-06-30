@@ -1,1 +1,5 @@
 streamlit
+psycopg2-binary
+matplotlib
+seaborn
+pandas
