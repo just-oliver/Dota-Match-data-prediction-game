@@ -1,4 +1,4 @@
 streamlit
-psycopg2-binary
+psycopg2
 matplotlib
 seaborn
