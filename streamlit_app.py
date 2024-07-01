@@ -4,7 +4,7 @@ import psycopg2 as psql
 import json
 
 
-st.title('Dota 2 Match Gussing Game')
+st.title('Dota 2 Match Guessing Game')
 
 if 'score' not in st.session_state:
     st.session_state.score = 0
@@ -30,7 +30,9 @@ rank_dists = {'Herald':(10,15),
             'Ancient':(60,65),
             'Divine':(70,75),
             'Immortal':(80,85)}
+
 dist = rank_dists[rank]
+
 conn = psql.connect(database = 'pagila',
                     user = st.secrets["sql_user"],
                     host = st.secrets["host"],
