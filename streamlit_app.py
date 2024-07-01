@@ -94,7 +94,7 @@ with cols[0]:
                     st.image('./images/empty.png', caption=items[j][0],width=88)
                 else:
                     if len(items[j][0]) > 12:
-                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:13] + '...')
+                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:11] + '...')
                     else:
                         st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0])
 
@@ -113,7 +113,7 @@ with cols[1]:
                     st.image('./images/empty.png', caption=items[j][0],width=88)
                 else:
                     if len(items[j][0]) > 12:
-                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:13] + '...')
+                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:11] + '...')
                     else:
                         st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0])
 ## Choice Form
