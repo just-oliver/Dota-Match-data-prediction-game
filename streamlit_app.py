@@ -22,6 +22,9 @@ rank = st.selectbox('Rank of Game', ['Herald',
                                      'Divine',
                                      'Immortal'])
 
+st.divider()
+st.markdown("<h2 style='text-align: center;'>Hero Picks</h2>", unsafe_allow_html=True)
+
 rank_dists = {'Herald':(10,15),
             'Guardian':(20,25),
             'Crusader':(30,35),
@@ -117,18 +120,20 @@ with cols[0]:
     st.header(':green[Radiant Team]')
     for i, hero in enumerate(hero_details[:5]):
         st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=hero[0], width=200)
-        st.markdown(f"{hero[0]}'s Items")
-        item_cols = st.columns(3)
-        items = items_details[i]
-        for j,item in enumerate(items):
-            with item_cols[j%3]:
-                if items[j][1] == 'empty':
-                    st.image('./images/empty.png', caption=items[j][0],width=88)
-                else:
-                    if len(items[j][0]) > 12:
-                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:11] + '...')
+        see_items = st.checkbox(f'Show {hero[0]} Items')
+        if see_items:
+            st.markdown(f"{hero[0]}'s Items")
+            item_cols = st.columns(3)
+            items = items_details[i]
+            for j,item in enumerate(items):
+                with item_cols[j%3]:
+                    if items[j][1] == 'empty':
+                        st.image('./images/empty.png', caption=items[j][0],width=88)
                     else:
-                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0])
+                        if len(items[j][0]) > 12:
+                            st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:11] + '...')
+                        else:
+                            st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0])
 
 
 with cols[1]:
@@ -136,37 +141,44 @@ with cols[1]:
     for i, hero in enumerate(hero_details[5:]):
         i = i + 5
         st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=hero[0], width=200)
-        st.markdown(f"{hero[0]}'s Items")
-        item_cols = st.columns(3)
-        items = items_details[i]
-        for j,item in enumerate(items):
-            with item_cols[j%3]:
-                if items[j][1] == 'empty':
-                    st.image('./images/empty.png', caption=items[j][0],width=88)
-                else:
-                    if len(items[j][0]) > 12:
-                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:11] + '...')
+        see_items = st.checkbox(f'Show {hero[0]} Items')
+        if see_items:
+            st.markdown(f"{hero[0]}'s Items")
+            item_cols = st.columns(3)
+            items = items_details[i]
+            for j,item in enumerate(items):
+                with item_cols[j%3]:
+                    if items[j][1] == 'empty':
+                        st.image('./images/empty.png', caption=items[j][0],width=88)
                     else:
-                        st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0])
+                        if len(items[j][0]) > 12:
+                            st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0][:11] + '...')
+                        else:
+                            st.image('https://cdn.cloudflare.steamstatic.com/'+items[j][1], caption=items[j][0])
 ## Choice Form
 
+st.divider()
+st.markdown("<h2 style='text-align: center;'>Statistics</h2>", unsafe_allow_html=True)
 
-with st.form('Player Guess'):
+st.divider()
+
+form_placeholder = st.empty()
+
+with form_placeholder.form('Player Guess'):
     st.markdown('**Predict which team will win!**')
     selection = st.radio('Team:', ['Radiant','Dire'])
-
     submition_button = st.form_submit_button()
 
 
 if submition_button:
-    st.write(selection)
-    if (radiant_wins and selection == 'Radiant') or not (radiant_wins and selection == 'Dire'):
-        st.markdown(f'You have Guessed correctly and gained **100 points**! 🙌')
+    form_placeholder.empty()
+    if (radiant_wins and selection == 'Radiant') or  (not radiant_wins and selection == 'Dire'):
+        st.markdown(f'### You have Guessed {selection} correctly and gained **100 points**! 🙌')
         st.session_state.score += 100
         st.balloons()
         
     else:
-        st.markdown(f'You have Guessed incorrectly and lose **100 points**! 👎')
+        st.markdown(f'### You have Guessed {selection} incorrectly and lose **100 points**! 👎')
         st.session_state.score -= 100
     st.markdown(f"## [:red[Match ID : {match_id}]](https://www.dotabuff.com/matches/{match_id})")
 
