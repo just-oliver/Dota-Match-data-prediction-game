@@ -120,6 +120,9 @@ hero_details = [(hero_id_dict[hero_id]['localized_name'], hero_id_dict[hero_id][
 items_ids = [hero_row[4] for hero_row in hero_rows]
 backpacks_ids = [hero_row[5] for hero_row in hero_rows]
 neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
+networths = [hero_row[13] for hero_row in hero_rows]
+
+st.write(networths)
 # int to str
 items_ids = [[str(x) for x in item_ids] for item_ids in items_ids]
 backpacks_ids = [[str(x) for x in backpack_ids] for backpack_ids in backpacks_ids]
@@ -147,7 +150,10 @@ cols = st.columns(2)
 with cols[0]:
     st.header(':green[Radiant Team]')
     for i, hero in enumerate(hero_details[:5]):
-        st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})", width=200)
+        if len(f"{hero[0]} ({facet_names[i]})") > 27:
+            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})"[:25] + '...', width=200)
+        else:
+            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})", width=200)
         if see_items:
             st.markdown(f"{hero[0]}'s Items")
             item_cols = st.columns(3)
@@ -192,7 +198,10 @@ with cols[1]:
     st.header(':red[Dire Team]')
     for i, hero in enumerate(hero_details[5:]):
         i = i + 5
-        st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})", width=200)
+        if len(f"{hero[0]} ({facet_names[i]})") > 27:
+            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})"[:25] + '...', width=200)
+        else:
+            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})", width=200)
         if see_items:
             st.markdown(f"{hero[0]}'s Items")
             item_cols = st.columns(3)
@@ -234,7 +243,7 @@ with cols[1]:
 
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
-# 
+
 
 st.divider()
 ## Choice Form
