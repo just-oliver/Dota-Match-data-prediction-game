@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import psycopg2 as psql
 import json
-
+import plotly.graph_objects as go
 
 st.title('Dota 2 Match Guessing Game')
 
@@ -121,8 +121,13 @@ items_ids = [hero_row[4] for hero_row in hero_rows]
 backpacks_ids = [hero_row[5] for hero_row in hero_rows]
 neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
 networths = [hero_row[13] for hero_row in hero_rows]
+hero_names = [hero_detail[0] for hero_detail in hero_details]
+side = ["radiant" if i < 5 else "dire" for i in range(10)]
+combined = list(zip(networths, hero_names, side))
+combined.sort(reverse=True, key=lambda index:index[0])
 
-st.write(networths)
+sorted_networths = [entry[0] for entry in combined]
+
 # int to str
 items_ids = [[str(x) for x in item_ids] for item_ids in items_ids]
 backpacks_ids = [[str(x) for x in backpack_ids] for backpack_ids in backpacks_ids]
