@@ -3,6 +3,7 @@
 
 <a href="https://dota-match-data-ma5ywyzq3xa.streamlit.app/">
   <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Dota-2-simplified-logo.svg" alt="Open in Streamlit" width="40" height="40">
+  <figcaption>view app on Streamlit Cloud</figcaption>
 </a>
 
 ### How to run it on your own machine
