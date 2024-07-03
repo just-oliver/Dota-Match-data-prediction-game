@@ -4,7 +4,7 @@ import psycopg2 as psql
 import json
 import plotly.graph_objects as go
 
-st.title('Dota 2 Match Guessing Game')
+
 
 if 'score' not in st.session_state:
     st.session_state.score = 0
@@ -120,7 +120,7 @@ hero_details = [(hero_id_dict[hero_id]['localized_name'], hero_id_dict[hero_id][
 items_ids = [hero_row[4] for hero_row in hero_rows]
 backpacks_ids = [hero_row[5] for hero_row in hero_rows]
 neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
-networths = [hero_row[13] for hero_row in hero_rows]
+
 
 
 
@@ -247,28 +247,99 @@ with cols[1]:
 
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
+Visualization =st.selectbox('Visualization', ['None','Hero Net Worth','Hero Level', 'Hero KDA'])
 ## Networth barplot
+
 hero_names = [hero_detail[0] for hero_detail in hero_details]
 side = ["radiant" if i < 5 else "dire" for i in range(10)]
-combined = list(zip(networths, hero_names, side))
-combined.sort(reverse=True, key=lambda index:index[0])
-sorted_networths = [entry[0] for entry in combined]
-sorted_names = [entry[1] for entry in combined]
-sorted_sides = [entry[2] for entry in combined]
-colours = ['green' if side == 'radiant' else 'red' for side in sorted_sides]
+if Visualization == 'Hero Net Worth':
+    networths = [hero_row[13] for hero_row in hero_rows]
+    combined = list(zip(networths, hero_names, side))
+    combined.sort(reverse=True, key=lambda index:index[0])
+    sorted_networths = [entry[0] for entry in combined]
+    sorted_names = [entry[1] for entry in combined]
+    sorted_sides = [entry[2] for entry in combined]
+    colours = ['green' if side == 'radiant' else 'red' for side in sorted_sides]
 
-fig_networth = go.Figure(data=[go.Bar(
-    x=sorted_names,
-    y=sorted_networths,
-    marker_color=colours,
-    text=sorted_networths,
-    textposition='outside'
-)])
+    fig_networth = go.Figure(data=[go.Bar(
+        x=sorted_names,
+        y=sorted_networths,
+        marker_color=colours,
+        text=sorted_networths,
+        textposition='outside'
+    )])
 
 
-st.plotly_chart(fig_networth)
+    fig_networth.update_layout(
+        title="Net Worths of Heroes",
+        xaxis_title="Hero",
+        yaxis_title="Net Worth",
+        showlegend=False,
+        title_x=0.44
+    )
+
+    st.plotly_chart(fig_networth)
 ## level barplot
+if Visualization == 'Hero Level':
+    levels = [hero_row[12] for hero_row in hero_rows]
+    combined = list(zip(levels, hero_names, side))
+    combined.sort(reverse=True, key=lambda index:index[0])
+    sorted_levels = [entry[0] for entry in combined]
+    sorted_names = [entry[1] for entry in combined]
+    sorted_sides = [entry[2] for entry in combined]
+    colours = ['green' if side == 'radiant' else 'red' for side in sorted_sides]
 
+    fig_levels = go.Figure(data=[go.Bar(
+        x=sorted_names,
+        y=sorted_levels,
+        marker_color=colours,
+        text=sorted_levels,
+        textposition='outside'
+    )])
+
+
+    fig_levels.update_layout(
+        title="Hero Levels",
+        xaxis_title="Hero",
+        yaxis_title="Level",
+        showlegend=False,
+        title_x=0.44
+    )
+
+    st.plotly_chart(fig_levels)
+
+if Visualization == 'Hero KDA':
+    kda_sort = st.radio('Sort by:', ['Kills','Deaths', 'Assists'], horizontal=True)
+    kills = [hero_row[7] for hero_row in hero_rows]
+    deaths = [hero_row[8] for hero_row in hero_rows]
+    assists = [hero_row[9] for hero_row in hero_rows]
+    combined = list(zip(kills, deaths, assists, hero_names, side))
+    if kda_sort == 'Kills':
+        combined.sort(reverse=True, key=lambda index:index[0])
+    elif kda_sort == 'Deaths':
+        combined.sort(reverse=True, key=lambda index:index[1])
+    else:
+        combined.sort(reverse=True, key=lambda index:index[2])
+    sorted_kills = [entry[0] for entry in combined]
+    sorted_deaths = [entry[1] for entry in combined]
+    sorted_assists = [entry[2] for entry in combined]
+    sorted_names = [entry[3] for entry in combined]
+    sorted_sides = [entry[4] for entry in combined]
+    name_sides = [f'{sorted_names[i]} ({sorted_sides[i].title()})' for i in range(10)]
+    fig_kda = go.Figure(data=[
+        go.Bar(name='Kills', x=name_sides, y=sorted_kills, marker_color='blue'),
+        go.Bar(name='Deaths', x=name_sides, y=sorted_deaths, marker_color='red'),
+        go.Bar(name='Assists', x=name_sides, y=sorted_assists, marker_color='green')
+    ])
+    fig_kda.update_layout(
+        title="Hero KDA ",
+        xaxis_title="Hero",
+        yaxis_title="Level",
+        showlegend=True,
+        title_x=0.44
+    )
+
+    st.plotly_chart(fig_kda)
 
 st.divider()
 ## Choice Form
