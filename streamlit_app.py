@@ -154,10 +154,12 @@ cols = st.columns(2)
 with cols[0]:
     st.header(':green[Radiant Team]')
     for i, hero in enumerate(hero_details[:5]):
-        if len(f"{hero[0]} ({facet_names[i]})") > 27:
-            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})"[:25] + '...', width=200)
-        else:
-            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})", width=200)
+        st.markdown(f"""
+                    <div style="text-align: center;">
+                    <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]} alt="Image" width="200"></a>
+                    <p>{hero[0]} ({facet_names[i]})</p>
+                    </div>
+                    """, unsafe_allow_html=True)
         if see_items:
             st.markdown(f"{hero[0]}'s Items")
             item_cols = st.columns(3)
@@ -202,10 +204,12 @@ with cols[1]:
     st.header(':red[Dire Team]')
     for i, hero in enumerate(hero_details[5:]):
         i = i + 5
-        if len(f"{hero[0]} ({facet_names[i]})") > 27:
-            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})"[:25] + '...', width=200)
-        else:
-            st.image('https://cdn.cloudflare.steamstatic.com/' + hero[1], caption=f"{hero[0]} ({facet_names[i]})", width=200)
+        st.markdown(f"""
+                    <div style="text-align: center;">
+                    <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]} alt="Image" width="200"></a>
+                    <p>{hero[0]} ({facet_names[i]})</p>
+                    </div>
+                    """, unsafe_allow_html=True)
         if see_items:
             st.markdown(f"{hero[0]}'s Items")
             item_cols = st.columns(3)
