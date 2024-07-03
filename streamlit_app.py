@@ -156,7 +156,7 @@ with cols[0]:
     for i, hero in enumerate(hero_details[:5]):
         st.markdown(f"""
                     <div style="text-align: center;">
-                    <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]} alt="Image" width="200"></a>
+                    <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]} title="See {hero[0]} Details" alt="Image" width="200"></a>
                     <p>{hero[0]} ({facet_names[i]})</p>
                     </div>
                     """, unsafe_allow_html=True)
@@ -206,7 +206,7 @@ with cols[1]:
         i = i + 5
         st.markdown(f"""
                     <div style="text-align: center;">
-                    <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]} alt="Image" width="200"></a>
+                    <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]}  title="See {hero[0]} Details" alt="Image" width="200"></a>
                     <p>{hero[0]} ({facet_names[i]})</p>
                     </div>
                     """, unsafe_allow_html=True)
