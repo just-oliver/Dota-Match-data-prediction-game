@@ -121,12 +121,11 @@ items_ids = [hero_row[4] for hero_row in hero_rows]
 backpacks_ids = [hero_row[5] for hero_row in hero_rows]
 neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
 networths = [hero_row[13] for hero_row in hero_rows]
-hero_names = [hero_detail[0] for hero_detail in hero_details]
-side = ["radiant" if i < 5 else "dire" for i in range(10)]
-combined = list(zip(networths, hero_names, side))
-combined.sort(reverse=True, key=lambda index:index[0])
 
-sorted_networths = [entry[0] for entry in combined]
+
+
+
+
 
 # int to str
 items_ids = [[str(x) for x in item_ids] for item_ids in items_ids]
@@ -248,6 +247,27 @@ with cols[1]:
 
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
+## Networth barplot
+hero_names = [hero_detail[0] for hero_detail in hero_details]
+side = ["radiant" if i < 5 else "dire" for i in range(10)]
+combined = list(zip(networths, hero_names, side))
+combined.sort(reverse=True, key=lambda index:index[0])
+sorted_networths = [entry[0] for entry in combined]
+sorted_names = [entry[1] for entry in combined]
+sorted_sides = [entry[2] for entry in combined]
+colours = ['green' if side == 'radiant' else 'red' for side in sorted_sides]
+
+fig_networth = go.Figure(data=[go.Bar(
+    x=sorted_names,
+    y=sorted_networths,
+    marker_color=colours,
+    text=sorted_networths,
+    textposition='outside'
+)])
+
+
+st.plotly_chart(fig_networth)
+## level barplot
 
 
 st.divider()
