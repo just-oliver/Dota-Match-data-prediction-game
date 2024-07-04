@@ -89,6 +89,8 @@ def match_selection(dist):
     row = cur.fetchone()
     match_id = row[0]
     radiant_wins = row[2]
+    conn.close()
+    cur.close()
     return match_id, radiant_wins
 
 match_id, radiant_wins = match_selection(dist)
@@ -106,6 +108,32 @@ cur.execute(hero_sql)
 hero_rows = cur.fetchall()
 hero_ids = [str(hero_row[1]) for hero_row in hero_rows]
 facets = [hero_row[3] for hero_row in hero_rows]
+
+def get_benchmarks():
+    benchmarks = []
+    with psql.connect(database = 'pagila',
+                    user = st.secrets["sql_user"],
+                    host = st.secrets["host"],
+                    password = st.secrets["sql_password"],
+                    port=5432
+                    ):
+        with conn.cursor() as cur:
+            for i in range(10):
+                benchmark_sql= f'''
+                    SELECT avg_gpm, avg_xpm FROM student.ojdb_hero_benchmark
+                    WHERE hero_id = {hero_ids[i]}
+                    '''
+                cur.execute(benchmark_sql)
+                bench_row = cur.fetchall()
+                benchmarks.append(bench_row)
+    return benchmarks
+            
+
+# get benchmark values
+benchmarks = get_benchmarks()
+hero_gpms = [hero_row[10] for hero_row in hero_rows]
+hero_xpms = [hero_row[11] for hero_row in hero_rows]
+# get the order back
 
 # Getting hero names and image locations from json
 with open('data/heroes.json', 'r') as f:
@@ -235,7 +263,13 @@ with cols[0]:
             else:
                 with buff_cols[2]:
                     st.image('./images/empty.png',width=88)
-                    st.write('Moon Shard') 
+                    st.write('Moon Shard')
+        if see_gpm:
+            st.markdown(f"**{hero[0]}'s Gold Per Minuite (GPM)**")
+            st.metric(label=f'compared to average for {hero[0]}', value=hero_gpms[i], delta=hero_gpms[i]-benchmarks[i][0][0])
+        if see_xpm:
+            st.markdown(f"**{hero[0]}'s XP Per Minuite (XPM)**")
+            st.metric(label=f'compared to average for {hero[0]}', value=hero_xpms[i], delta=hero_xpms[i]-benchmarks[i][0][1])
             
                 
         
@@ -320,7 +354,13 @@ with cols[1]:
             else:
                 with buff_cols[2]:
                     st.image('./images/empty.png',width=88)
-                    st.write('Moon Shard') 
+                    st.write('Moon Shard')
+        if see_gpm:
+            st.markdown(f"**{hero[0]}'s Gold Per Minuite (GPM)**")
+            st.metric(label=f'Compared to average for {hero[0]}', value=hero_gpms[i], delta=hero_gpms[i]-benchmarks[i][0][0])
+        if see_xpm:
+            st.markdown(f"**{hero[0]}'s XP Per Minuite (XPM)**")
+            st.metric(label=f'compared to average for {hero[0]}', value=hero_xpms[i], delta=hero_xpms[i]-benchmarks[i][0][1])
 
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
