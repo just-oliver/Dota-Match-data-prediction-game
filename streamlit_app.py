@@ -25,19 +25,33 @@ rank = st.selectbox('Rank of Game', ['Herald',
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Hero Picks</h2>", unsafe_allow_html=True)
 
-
+score_change = 100
 # check box to show items
 checkbox_cols = st.columns(2)
 with checkbox_cols[0]:
-    see_items = st.checkbox(f'Show Items')
-    see_neutral = st.checkbox(f'Show Neutral Item')
-    see_backpack = st.checkbox(f'Show Backpack')
+    see_items = st.checkbox('Show Items (Cost -10)')
+    see_neutral = st.checkbox('Show Neutral Item (Cost -10)')
+    see_backpack = st.checkbox('Show Backpack (Cost -10)')
 with checkbox_cols[1]:
-    see_buffs = st.checkbox('Show Permanent Buffs')
-    see_gpm = st.checkbox('Show Gold Per Minuite')
-    see_xpm = st.checkbox('Show XP Per Minuite')
+    see_buffs = st.checkbox('Show Permanent Buffs (Cost -10)')
+    see_gpm = st.checkbox('Show Gold Per Minuite (Cost -10)')
+    see_xpm = st.checkbox('Show XP Per Minuite (Cost -10)')
 
-#
+if see_items:
+    score_change -=10
+if see_neutral:
+    score_change -=10
+if see_backpack:
+    score_change -=10
+if see_buffs:
+    score_change -=10
+if see_gpm:
+    score_change -=10
+if see_xpm:
+    score_change -=10
+
+
+
 rank_dists = {'Herald':(10,15),
             'Guardian':(20,25),
             'Crusader':(30,35),
@@ -48,17 +62,6 @@ rank_dists = {'Herald':(10,15),
             'Immortal':(80,85)}
 
 dist = rank_dists[rank]
-
-conn = psql.connect(database = 'pagila',
-                    user = st.secrets["sql_user"],
-                    host = st.secrets["host"],
-                    password = st.secrets["sql_password"],
-                    port=5432
-                    )
-
-cur = conn.cursor()
-
-
 
 @st.cache_data
 def match_selection(dist):
@@ -164,28 +167,9 @@ def match_selection(dist):
              hero_details, agh_scepter_buff, agh_shard_buff, moon_shard_buff, items_details, backpacks_details, neutrals_details)
 
 match_id, radiant_wins, hero_rows, benchmarks, facets, hero_gpms, hero_xpms, hero_abilities_name, facet_names, hero_details, agh_scepter_buff, agh_shard_buff, moon_shard_buff, items_details, backpacks_details, neutrals_details = match_selection(dist)
-## Page Start
 
 
-## Get heroes
-
-            
-
-# get benchmark values
-
-# get the order back
-
-# Getting hero names and image locations from json
-
-
-
-
-
-
-
-
-
-
+# Hero Picks info
 cols = st.columns(2)
 with cols[0]:
     st.header(':green[Radiant Team]')
@@ -365,12 +349,13 @@ with cols[1]:
 
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
-Visualization =st.selectbox('Visualization', ['None','Hero Net Worth','Hero Level', 'Hero KDA'])
+Visualization =st.selectbox('Visualization', ['None','Hero Net Worth (Cost -35)','Hero Level (Cost -35)', 'Hero KDA (Cost -35)'])
 ## Networth barplot
 
 hero_names = [hero_detail[0] for hero_detail in hero_details]
 side = ["radiant" if i < 5 else "dire" for i in range(10)]
-if Visualization == 'Hero Net Worth':
+if Visualization == 'Hero Net Worth (Cost -35)':
+    score_change -= 35
     networths = [hero_row[13] for hero_row in hero_rows]
     combined = list(zip(networths, hero_names, side))
     combined.sort(reverse=True, key=lambda index:index[0])
@@ -398,7 +383,8 @@ if Visualization == 'Hero Net Worth':
 
     st.plotly_chart(fig_networth)
 ## level barplot
-if Visualization == 'Hero Level':
+if Visualization == 'Hero Level (Cost -35)':
+    score_change -= 35
     levels = [hero_row[12] for hero_row in hero_rows]
     combined = list(zip(levels, hero_names, side))
     combined.sort(reverse=True, key=lambda index:index[0])
@@ -426,7 +412,8 @@ if Visualization == 'Hero Level':
 
     st.plotly_chart(fig_levels)
 
-if Visualization == 'Hero KDA':
+if Visualization == 'Hero KDA (Cost -35)':
+    score_change -= 35
     kda_sort = st.radio('Sort by:', ['Kills','Deaths', 'Assists'], horizontal=True)
     kills = [hero_row[7] for hero_row in hero_rows]
     deaths = [hero_row[8] for hero_row in hero_rows]
@@ -464,6 +451,7 @@ st.divider()
 form_placeholder = st.empty()
 with form_placeholder.form('Player Guess'):
     st.markdown('**Predict which team will win!**')
+    st.markdown(f'Points correct choice: **{score_change}**')
     selection = st.radio('Team:', ['Radiant','Dire'])
     submition_button = st.form_submit_button()
 
@@ -471,14 +459,16 @@ with form_placeholder.form('Player Guess'):
 if submition_button:
     form_placeholder.empty()
     if (radiant_wins and selection == 'Radiant') or  (not radiant_wins and selection == 'Dire'):
-        st.markdown(f'### You have Guessed {selection} correctly and gained **100 points**! 🙌')
-        st.session_state.score += 100
+        st.markdown(f'### You have Guessed {selection} correctly and gained **{score_change} points**! 🙌')
+        st.session_state.score += score_change
         st.balloons()
         
     else:
         st.markdown(f'### You have Guessed {selection} incorrectly and lose **100 points**! 👎')
         st.session_state.score -= 100
+    st.markdown(f"## :rainbow[New Score: {st.session_state.score}]")
     st.markdown(f"## [:red[Match ID : {match_id}]](https://www.dotabuff.com/matches/{match_id})")
+    
 
 if st.button("New Game"):
         st.cache_data.clear()
