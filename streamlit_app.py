@@ -74,9 +74,6 @@ def match_selection(dist):
                     )
 
     cur = conn.cursor()
-    
-
-    
 
     query_sql = f'''
             SELECT *
@@ -89,27 +86,16 @@ def match_selection(dist):
     row = cur.fetchone()
     match_id = row[0]
     radiant_wins = row[2]
-    conn.close()
-    cur.close()
-    return match_id, radiant_wins
-
-match_id, radiant_wins = match_selection(dist)
-## Page Start
-
-
-## Get heroes
-hero_sql = f'''
+    ## hero select query
+    hero_sql = f'''
             SELECT *
             FROM student.ojdb_hero_picks
             WHERE match_id = {match_id}
             ORDER BY team ASC, net_worth DESC; -- gets the radiant heroes first followed by dire, then top networth heroes
-'''
-cur.execute(hero_sql)
-hero_rows = cur.fetchall()
-hero_ids = [str(hero_row[1]) for hero_row in hero_rows]
-facets = [hero_row[3] for hero_row in hero_rows]
-
-def get_benchmarks():
+    '''
+    cur.execute(hero_sql)
+    hero_rows = cur.fetchall()
+    hero_ids = [str(hero_row[1]) for hero_row in hero_rows]
     benchmarks = []
     with psql.connect(database = 'pagila',
                     user = st.secrets["sql_user"],
@@ -126,63 +112,78 @@ def get_benchmarks():
                 cur.execute(benchmark_sql)
                 bench_row = cur.fetchall()
                 benchmarks.append(bench_row)
-    return benchmarks
+    conn.close()
+    cur.close()
+    # extra stuff to cache
+    facets = [hero_row[3] for hero_row in hero_rows]
+    hero_gpms = [hero_row[10] for hero_row in hero_rows]
+    hero_xpms = [hero_row[11] for hero_row in hero_rows]
+    # Getting hero names and image locations from json
+    with open('data/heroes.json', 'r') as f:
+        hero_id_dict = json.load(f)
+    hero_abilities_name = [hero_id_dict[hero_id]['name'] for hero_id in hero_ids]
+    # get facet names from abilites json
+    with open('data/hero_abilities.json', 'r') as f:
+        hero_abilities_dict = json.load(f)
+    facet_names = []
+    for i,facet in enumerate(facets):
+        facet_names.append(hero_abilities_dict[hero_abilities_name[i]]['facets'][facet-1]['title'])
+    # Hero Name and image
+    hero_details = [(hero_id_dict[hero_id]['localized_name'], hero_id_dict[hero_id]['img']) for hero_id in hero_ids]
+    # item resolutions
+    items_ids = [hero_row[4] for hero_row in hero_rows]
+    backpacks_ids = [hero_row[5] for hero_row in hero_rows]
+    neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
+    # buffs
+    agh_scepter_buff = [hero_row[14] for hero_row in hero_rows]
+    agh_shard_buff = [hero_row[15] for hero_row in hero_rows]
+    moon_shard_buff = [hero_row[16] for hero_row in hero_rows]
+
+    # int to str
+    items_ids = [[str(x) for x in item_ids] for item_ids in items_ids]
+    backpacks_ids = [[str(x) for x in backpack_ids] for backpack_ids in backpacks_ids]
+
+
+    with open('data/item_ids.json', 'r') as f:
+        item_id_dict = json.load(f)
+
+    items = [[item_id_dict[x] for x in item_ids] for item_ids in items_ids]
+    backpacks = [[item_id_dict[x] for x in backpack_ids] for backpack_ids in backpacks_ids]
+    neutrals = [item_id_dict[neutral_id] for neutral_id in neutrals_ids]
+
+
+
+    with open('data/items.json', 'r') as f:
+        item_dict = json.load(f)
+
+    items_details = [[(item_dict[item]['dname'],item_dict[item]['img']) for item in item_list] for item_list in items]
+    backpacks_details = [[(item_dict[item]['dname'],item_dict[item]['img']) for item in backpack_list] for backpack_list in backpacks]
+    neutrals_details = [(item_dict[neutral]['dname'], item_dict[neutral]['img']) for neutral in neutrals]
+
+    return (match_id, radiant_wins, hero_rows, benchmarks, facets, hero_gpms, hero_xpms, hero_abilities_name, facet_names,
+             hero_details, agh_scepter_buff, agh_shard_buff, moon_shard_buff, items_details, backpacks_details, neutrals_details)
+
+match_id, radiant_wins, hero_rows, benchmarks, facets, hero_gpms, hero_xpms, hero_abilities_name, facet_names, hero_details, agh_scepter_buff, agh_shard_buff, moon_shard_buff, items_details, backpacks_details, neutrals_details = match_selection(dist)
+## Page Start
+
+
+## Get heroes
+
             
 
 # get benchmark values
-benchmarks = get_benchmarks()
-hero_gpms = [hero_row[10] for hero_row in hero_rows]
-hero_xpms = [hero_row[11] for hero_row in hero_rows]
+
 # get the order back
 
 # Getting hero names and image locations from json
-with open('data/heroes.json', 'r') as f:
-    hero_id_dict = json.load(f)
-
-# get facet name
-with open('data/hero_abilities.json', 'r') as f:
-    hero_abilities_dict = json.load(f)
-
-hero_abilities_name = [hero_id_dict[hero_id]['name'] for hero_id in hero_ids]
-facet_names = []
-
-for i,facet in enumerate(facets):
-    facet_names.append(hero_abilities_dict[hero_abilities_name[i]]['facets'][facet-1]['title'])
-    
-hero_details = [(hero_id_dict[hero_id]['localized_name'], hero_id_dict[hero_id]['img']) for hero_id in hero_ids]
-
-items_ids = [hero_row[4] for hero_row in hero_rows]
-backpacks_ids = [hero_row[5] for hero_row in hero_rows]
-neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
-
-agh_scepter_buff = [hero_row[14] for hero_row in hero_rows]
-agh_shard_buff = [hero_row[15] for hero_row in hero_rows]
-moon_shard_buff = [hero_row[16] for hero_row in hero_rows]
 
 
 
 
 
-# int to str
-items_ids = [[str(x) for x in item_ids] for item_ids in items_ids]
-backpacks_ids = [[str(x) for x in backpack_ids] for backpack_ids in backpacks_ids]
-
-
-with open('data/item_ids.json', 'r') as f:
-    item_id_dict = json.load(f)
-
-items = [[item_id_dict[x] for x in item_ids] for item_ids in items_ids]
-backpacks = [[item_id_dict[x] for x in backpack_ids] for backpack_ids in backpacks_ids]
-neutrals = [item_id_dict[neutral_id] for neutral_id in neutrals_ids]
 
 
 
-with open('data/items.json', 'r') as f:
-    item_dict = json.load(f)
-
-items_details = [[(item_dict[item]['dname'],item_dict[item]['img']) for item in item_list] for item_list in items]
-backpacks_details = [[(item_dict[item]['dname'],item_dict[item]['img']) for item in backpack_list] for backpack_list in backpacks]
-neutrals_details = [(item_dict[neutral]['dname'], item_dict[neutral]['img']) for neutral in neutrals]
 
 
 cols = st.columns(2)
