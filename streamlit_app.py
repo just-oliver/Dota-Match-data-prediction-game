@@ -27,9 +27,15 @@ st.markdown("<h2 style='text-align: center;'>Hero Picks</h2>", unsafe_allow_html
 
 
 # check box to show items
-see_items = st.checkbox(f'Show Items')
-see_neutral = st.checkbox(f'Show Neutral Item')
-see_backpack = st.checkbox(f'Show Backpack')
+checkbox_cols = st.columns(2)
+with checkbox_cols[0]:
+    see_items = st.checkbox(f'Show Items')
+    see_neutral = st.checkbox(f'Show Neutral Item')
+    see_backpack = st.checkbox(f'Show Backpack')
+with checkbox_cols[1]:
+    see_buffs = st.checkbox('Show Permanent Buffs')
+    see_gpm = st.checkbox('Show Gold Per Minuite')
+    see_xpm = st.checkbox('Show XP Per Minuite')
 
 #
 rank_dists = {'Herald':(10,15),
@@ -121,7 +127,9 @@ items_ids = [hero_row[4] for hero_row in hero_rows]
 backpacks_ids = [hero_row[5] for hero_row in hero_rows]
 neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
 
-
+agh_scepter_buff = [hero_row[14] for hero_row in hero_rows]
+agh_shard_buff = [hero_row[15] for hero_row in hero_rows]
+moon_shard_buff = [hero_row[16] for hero_row in hero_rows]
 
 
 
@@ -149,7 +157,6 @@ backpacks_details = [[(item_dict[item]['dname'],item_dict[item]['img']) for item
 neutrals_details = [(item_dict[neutral]['dname'], item_dict[neutral]['img']) for neutral in neutrals]
 
 
-
 cols = st.columns(2)
 with cols[0]:
     st.header(':green[Radiant Team]')
@@ -161,7 +168,7 @@ with cols[0]:
                     </div>
                     """, unsafe_allow_html=True)
         if see_items:
-            st.markdown(f"{hero[0]}'s Items")
+            st.markdown(f"**{hero[0]}'s Items**")
             item_cols = st.columns(3)
             items = items_details[i]
             for j,item in enumerate(items):
@@ -174,7 +181,7 @@ with cols[0]:
                         else:
                             st.image('https://cdn.cloudflare.steamstatic.com/'+item[1], caption=item[0])
         if see_neutral:
-            st.markdown(f"{hero[0]}'s Neutral Item")
+            st.markdown(f"**{hero[0]}'s Neutral Item**")
             neutral = neutrals_details[i]
             if neutral[1] == 'empty':
                 st.image('./images/empty.png', caption=neutral[0],width=88)
@@ -184,7 +191,7 @@ with cols[0]:
                 else:
                     st.image('https://cdn.cloudflare.steamstatic.com'+neutral[1], caption=neutral[0])
         if see_backpack:
-            st.markdown(f"{hero[0]}'s Backpack")
+            st.markdown(f"**{hero[0]}'s Backpack**")
             backpack_cols = st.columns(3)
             backpacks = backpacks_details[i]
             for j,item in enumerate(backpacks):
@@ -196,6 +203,41 @@ with cols[0]:
                             st.image('https://cdn.cloudflare.steamstatic.com'+item[1], caption=item[0][:11] + '...')
                         else:
                             st.image('https://cdn.cloudflare.steamstatic.com'+item[1], caption=item[0])
+        if see_buffs:
+            buff_cols = st.columns(3)
+            if not (agh_scepter_buff[i] or agh_shard_buff[i] or moon_shard_buff[i]):
+                st.markdown(f"**{hero[0]} Has No Buffs**")
+            else:
+                st.markdown(f"**{hero[0]}'s Permanent Buffs**")
+            buff_cols = st.columns(3)
+            if agh_scepter_buff[i]:
+                with buff_cols[0]:
+                    st.image('https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter.png?t=1593393829403', width=88)
+                    st.write("Agh's Scepter")
+            else:
+                with buff_cols[0]:
+                    st.image('./images/empty.png',width=88)
+                    st.write("Agh's Scepter")
+            if agh_shard_buff[i]:
+                with buff_cols[1]:
+                    st.image('https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aghanims_shard.png?t=15933938294033',
+                                 width=88)
+                    st.write("Agh's Shard")
+            else:
+                with buff_cols[1]:
+                    st.image('./images/empty.png',width=88)
+                    st.write("Agh's Shard")
+            if moon_shard_buff[i]:
+                with buff_cols[2]:
+                    st.image('https://cdn.cloudflare.steamstatic.com//apps/dota2/images/dota_react/items/moon_shard.png?t=1593393829403',
+                                width=88)
+                    st.write('Moon Shard') 
+            else:
+                with buff_cols[2]:
+                    st.image('./images/empty.png',width=88)
+                    st.write('Moon Shard') 
+            
+                
         
 
 
@@ -211,7 +253,7 @@ with cols[1]:
                     </div>
                     """, unsafe_allow_html=True)
         if see_items:
-            st.markdown(f"{hero[0]}'s Items")
+            st.markdown(f"**{hero[0]}'s Items**")
             item_cols = st.columns(3)
             items = items_details[i]
             for j,item in enumerate(items):
@@ -246,8 +288,39 @@ with cols[1]:
                             st.image('https://cdn.cloudflare.steamstatic.com'+item[1], caption=item[0][:11] + '...')
                         else:
                             st.image('https://cdn.cloudflare.steamstatic.com'+item[1], caption=item[0])
-        
-
+        if see_buffs:
+            buff_cols = st.columns(3)
+            if not (agh_scepter_buff[i] or agh_shard_buff[i] or moon_shard_buff[i]):
+                st.markdown(f"**{hero[0]} Has No Buffs**")
+            else:
+                st.markdown(f"**{hero[0]}'s Permanent Buffs**")
+            buff_cols = st.columns(3)
+            if agh_scepter_buff[i]:
+                with buff_cols[0]:
+                    st.image('https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/ultimate_scepter.png?t=1593393829403', width=88)
+                    st.write("Agh's Scepter")
+            else:
+                with buff_cols[0]:
+                    st.image('./images/empty.png',width=88)
+                    st.write("Agh's Scepter")
+            if agh_shard_buff[i]:
+                with buff_cols[1]:
+                    st.image('https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/aghanims_shard.png?t=15933938294033',
+                                 width=88)
+                    st.write("Agh's Shard")
+            else:
+                with buff_cols[1]:
+                    st.image('./images/empty.png',width=88)
+                    st.write("Agh's Shard")
+            if moon_shard_buff[i]:
+                with buff_cols[2]:
+                    st.image('https://cdn.cloudflare.steamstatic.com//apps/dota2/images/dota_react/items/moon_shard.png?t=1593393829403',
+                                width=88)
+                    st.write('Moon Shard') 
+            else:
+                with buff_cols[2]:
+                    st.image('./images/empty.png',width=88)
+                    st.write('Moon Shard') 
 
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
@@ -338,7 +411,7 @@ if Visualization == 'Hero KDA':
     fig_kda.update_layout(
         title="Hero KDA ",
         xaxis_title="Hero",
-        yaxis_title="Level",
+        yaxis_title="Total",
         showlegend=True,
         title_x=0.44
     )
