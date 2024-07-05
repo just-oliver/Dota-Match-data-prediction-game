@@ -456,7 +456,7 @@ st.divider()
 form_placeholder = st.empty()
 with form_placeholder.form('Player Guess'):
     st.markdown('**Predict which team will win!**')
-    st.markdown(f'Points correct choice: **{score_change}**')
+    st.markdown(f'Points for correct choice: **{score_change}**')
     selection = st.radio('Team:', ['Radiant','Dire'])
     submition_button = st.form_submit_button()
 
