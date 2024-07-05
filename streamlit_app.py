@@ -9,7 +9,12 @@ import plotly.graph_objects as go
 if 'score' not in st.session_state:
     st.session_state.score = 0
 
-
+st.title(':red[DOTA 2 Outcome Prediction Dashboard]')
+st.markdown('''
+            Make your prediction on which team you think won this match!
+            Start with a maximum value of 100 points on offer, using extra information
+            comes at a cost, but be careful! If you predict incorrectly 100 points from your score will be deducted.😲
+            ''')
 st.header(f"Score: {st.session_state.score}")
 
 
