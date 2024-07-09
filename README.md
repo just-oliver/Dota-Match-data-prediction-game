@@ -25,16 +25,3 @@ To progress this app further I will ammend the following changes
 2. Rebalance the penalty of each of the indicators available to represent their overall significance more accurately
 3. Create a random forests classifier to predict which team is likely to win based on the data given to the user - this can be used to scale the 'betting odds'
 
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
