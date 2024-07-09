@@ -13,7 +13,7 @@ My plan was to give the player first the hero picks of a random public ranked ga
 The player has then 6 options of reveling more data regarding specific hero picks including items and gold per minuite metrics for a cost of -10 off the final score.
 3 more advanced indicators priced at -35, showing highly corrolated information with team victory such as the distributed net worths of each hero.
 
-To create this application I used the OpenDota API to harvest public match data and benchmark metrics which I then transformed and stored in a private PostgreSQL tables.
+To create this application I used the OpenDota API to harvest public match data and benchmark metrics which I then transformed and stored in a private PostgreSQL tables, [using this script] (https://github.com/just-oliver/capstone_project/blob/main/opendota_to_sql.py).
 Then the frontend and application logic I created in Streamlit due to the simplified nature to spin up data based applications quickly in the browser.
 
 While DOTA is a great game it can often put off new players due to it's steep learning curve and often unfriendly learning environment.
