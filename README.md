@@ -7,7 +7,7 @@
 </a>
 
 ## Inspiration & Methodology
-Inspired by guessing games such as wordle and heardle, where information is gradually given to the user to aid the player at the cost of a final score.<br>
+Inspired by guessing games such as wordle and heardle, where information is gradually given to the user to aid the player at the cost of a final score.
 Since Dota is a game of many kind of resources which can be visualised such as gold, items, experience and hero picks. 
 My plan was to give the player first the hero picks of a random public ranked game played in DOTA 2.
 The player has then 6 options of reveling more data regarding specific hero picks including items and gold per minuite metrics for a cost of -10 off the final score.
