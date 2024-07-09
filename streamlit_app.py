@@ -5,10 +5,10 @@ import json
 import plotly.graph_objects as go
 
 
-
+# create session state for score so doesn't refresh to 0 every load
 if 'score' not in st.session_state:
     st.session_state.score = 0
-
+# Static intro to the game
 st.title(':red[DOTA 2 Outcome Prediction Dashboard]')
 st.markdown('''
             Make your prediction on which team you think won this match!
@@ -17,7 +17,7 @@ st.markdown('''
             ''')
 st.header(f"Score: {st.session_state.score}")
 
-
+# Give user game rank selection
 rank = st.selectbox('Rank of Game', ['Herald',
                                      'Guardian',
                                      'Crusader',
@@ -30,9 +30,12 @@ rank = st.selectbox('Rank of Game', ['Herald',
 st.divider()
 st.markdown("<h2 style='text-align: center;'>Hero Picks</h2>", unsafe_allow_html=True)
 
+# Maximum gain of score for correct guess
 score_change = 100
+
 # check box to show items
 checkbox_cols = st.columns(2)
+# Give hero based indicator options to show, by default none are selected
 with checkbox_cols[0]:
     see_items = st.checkbox('Show Items (Cost -10)')
     see_neutral = st.checkbox('Show Neutral Item (Cost -10)')
@@ -71,8 +74,32 @@ dist = rank_dists[rank]
 @st.cache_data
 def match_selection(dist):
     '''
-    Creating a function here to cache the matchid and outcome 
+    Creating a function here to cache the match data collected from tables preventing additional stress
+    on sql server and improving load times
     to prevent the form submission from over writing the previous match
+
+    Inputs
+    ------
+    dist - len 2 tuple - represents the min and max numerical value of a rank distribution
+
+    Returns
+    -------
+    match_id
+    radiant_wins 
+    hero_rows
+    benchmarks
+    facets
+    hero_gpms
+    hero_xpms
+    hero_abilities_name
+    facet_names
+    hero_details
+    agh_scepter_buff
+    agh_shard_buff
+    moon_shard_buff
+    items_details
+    backpacks_details
+    neutrals_details
     '''
     conn = psql.connect(database = 'pagila',
                     user = st.secrets["sql_user"],
@@ -126,7 +153,7 @@ def match_selection(dist):
     facets = [hero_row[3] for hero_row in hero_rows]
     hero_gpms = [hero_row[10] for hero_row in hero_rows]
     hero_xpms = [hero_row[11] for hero_row in hero_rows]
-    # Getting hero names and image locations from json
+    # Getting hero names and image locations from jsons from DotaConstants
     with open('data/heroes.json', 'r') as f:
         hero_id_dict = json.load(f)
     hero_abilities_name = [hero_id_dict[hero_id]['name'] for hero_id in hero_ids]
@@ -138,10 +165,12 @@ def match_selection(dist):
         facet_names.append(hero_abilities_dict[hero_abilities_name[i]]['facets'][facet-1]['title'])
     # Hero Name and image
     hero_details = [(hero_id_dict[hero_id]['localized_name'], hero_id_dict[hero_id]['img']) for hero_id in hero_ids]
+
     # item resolutions
     items_ids = [hero_row[4] for hero_row in hero_rows]
     backpacks_ids = [hero_row[5] for hero_row in hero_rows]
     neutrals_ids = [str(hero_row[6]) for hero_row in hero_rows]
+
     # buffs
     agh_scepter_buff = [hero_row[14] for hero_row in hero_rows]
     agh_shard_buff = [hero_row[15] for hero_row in hero_rows]
@@ -174,11 +203,12 @@ def match_selection(dist):
 match_id, radiant_wins, hero_rows, benchmarks, facets, hero_gpms, hero_xpms, hero_abilities_name, facet_names, hero_details, agh_scepter_buff, agh_shard_buff, moon_shard_buff, items_details, backpacks_details, neutrals_details = match_selection(dist)
 
 
-# Hero Picks info
+# Displaying Hero pick and additional indicator info with additional images if available
 cols = st.columns(2)
 with cols[0]:
     st.header(':green[Radiant Team]')
     for i, hero in enumerate(hero_details[:5]):
+        # Creates links out of the images go to official hero page giving user addtional information regarding usecase of hero
         st.markdown(f"""
                     <div style="text-align: center;">
                     <a href="https://www.dota2.com/hero/{hero[0].lower().replace(' ', '')}"><img src=https://cdn.cloudflare.steamstatic.com/{hero[1]} title="See {hero[0]} Details" alt="Image" width="200"></a>
@@ -353,6 +383,7 @@ with cols[1]:
             st.metric(label=f'compared to average for {hero[0]}', value=hero_xpms[i], delta=hero_xpms[i]-benchmarks[i][0][1])
 
 st.divider()
+# Show advanced indicators which have display using plotly indicators with high correlation to victorious team
 st.markdown("<h2 style='text-align: center;'>Game Statistics</h2>", unsafe_allow_html=True)
 Visualization =st.selectbox('Visualization', ['None','Hero Net Worth (Cost -35)','Hero Level (Cost -35)', 'Hero KDA (Cost -35)'])
 ## Networth barplot
@@ -387,6 +418,7 @@ if Visualization == 'Hero Net Worth (Cost -35)':
     )
 
     st.plotly_chart(fig_networth)
+
 ## level barplot
 if Visualization == 'Hero Level (Cost -35)':
     score_change -= 35
@@ -452,7 +484,8 @@ if Visualization == 'Hero KDA (Cost -35)':
     st.plotly_chart(fig_kda)
 
 st.divider()
-## Choice Form
+
+## Choice Form - Play guess given here
 form_placeholder = st.empty()
 with form_placeholder.form('Player Guess'):
     st.markdown('**Predict which team will win!**')
@@ -460,7 +493,7 @@ with form_placeholder.form('Player Guess'):
     selection = st.radio('Team:', ['Radiant','Dire'])
     submition_button = st.form_submit_button()
 
-
+# Checks if player choice was correct and makes appropriate change to the players score total
 if submition_button:
     form_placeholder.empty()
     if (radiant_wins and selection == 'Radiant') or  (not radiant_wins and selection == 'Dire'):
@@ -472,6 +505,7 @@ if submition_button:
         st.markdown(f'### You have Guessed {selection} incorrectly and lose **100 points**! 👎')
         st.session_state.score -= 100
     st.markdown(f"## :rainbow[New Score: {st.session_state.score}]")
+    # Display link to DotaBuff a repository for visual match data 
     st.markdown(f"## [:red[Match ID : {match_id}]](https://www.dotabuff.com/matches/{match_id})")
     
 
